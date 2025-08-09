@@ -28,13 +28,21 @@
   <main>
     <section class="card" data-title="1">
       <h2 id="1">1</h2>
-      <img src="img/Sweatshirts_1.jpg" alt="Image 1" />
-      <p>Contents: Sweatshirts, sweaters, hoodies</p>
+        <div class="image-gallery">
+        <img src="img/Sweatshirts_1.jpg" alt="Sweatshirts" data-index="0">
+        </div>
+      <p>Contents: sweatshirts, sweaters, hoodies</p>
     </section>
 
     <section class="card" data-title="2">
       <h2 id="2">2</h2>
-      <p>Contents: </p>
+      <div class="image-gallery">
+        <img src="img/2_base.JPG" alt="plates" data-index="1">
+        <img src="img/2_top.jpg" alt="diapers" data-index="2">
+      <p>Contents: plates, bowls, cups, wine glasses, shaker bottles, measuring cup, 
+      pitcher, extra 1 diapers</p>
+
+
     </section>
 
     <section class="card" data-title="3">
@@ -50,6 +58,19 @@
       <p>Contents: </p>
     </section>
   </main>
+  <section class="card" data-title="Gallery Example">
+  <h2>Our Work</h2>
+  <div class="image-gallery">
+    <img src="img/Sweatshirts_1.jpg" alt="Sweatshirts" data-index="0">
+  </div>
+</section>
+
+<!-- Modal for Enlarged Image -->
+<div id="imageModal" class="modal">
+  <span class="modal-close">&times;</span>
+  <img class="modal-content" id="modalImg">
+  <div id="caption"></div>
+</div>
 
   <!-- ===== FOOTER ===== -->
   <footer>
@@ -96,8 +117,83 @@
     hamburgerMenu.addEventListener('click', () => {
       navMenu.classList.toggle('nav-open');
     });
+    // ===== IMAGE GALLERY MODAL =====
+    const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("modalImg");
+  const captionText = document.getElementById("caption");
+  const closeBtn = document.querySelector(".modal-close");
+  const galleryImages = document.querySelectorAll(".image-gallery img");
+
+  let currentIndex = 0;
+  let startX = 0;
+
+  // Open modal
+  galleryImages.forEach(img => {
+    img.addEventListener("click", function () {
+      currentIndex = parseInt(this.getAttribute("data-index"));
+      openModal();
+    });
+  });
+
+  function openModal() {
+    modal.style.display = "block";
+    document.body.classList.add("modal-open");
+    updateModalContent();
+  }
+
+  function closeModal() {
+    modal.style.display = "none";
+    document.body.classList.remove("modal-open");
+  }
+
+  function updateModalContent() {
+    const img = galleryImages[currentIndex];
+    modalImg.src = img.src;
+    captionText.textContent = img.alt;
+  }
+
+  // Close events
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", e => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Swipe detection
+  modal.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+  });
+
+  modal.addEventListener("touchend", e => {
+    let endX = e.changedTouches[0].clientX;
+    let diff = startX - endX;
+
+    if (Math.abs(diff) > 50) { // Swipe threshold
+      if (diff > 0) {
+        // Swipe left → next image
+        currentIndex = (currentIndex + 1) % galleryImages.length;
+      } else {
+        // Swipe right → prev image
+        currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+      }
+      updateModalContent();
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener("keydown", e => {
+    if (modal.style.display === "block") {
+      if (e.key === "ArrowRight") {
+        currentIndex = (currentIndex + 1) % galleryImages.length;
+        updateModalContent();
+      }
+      if (e.key === "ArrowLeft") {
+        currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+        updateModalContent();
+      }
+      if (e.key === "Escape") closeModal();
+    }
+  });
   </script>
 
 </body>
-
 </html>

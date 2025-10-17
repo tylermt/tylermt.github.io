@@ -127,9 +127,11 @@ main {
 .card h2 {
   margin-bottom: 0.75rem;
   color: var(--primary-color);
+  font-size: 40px;
 }
 
 .card p {
+  padding-top: 15px;
   color: var(--text-color);
 }
 
